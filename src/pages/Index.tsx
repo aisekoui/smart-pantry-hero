@@ -1,13 +1,41 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { RecipeFinderPanel } from "@/components/RecipeFinderPanel";
+import { FoodInventoryPanel } from "@/components/FoodInventoryPanel";
+import { ShoppingListPanel } from "@/components/ShoppingListPanel";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <ThemeProvider defaultTheme="light">
+      <div className="flex min-h-screen flex-col">
+        <Header />
+        
+        <main className="flex-grow">
+          <div className="container py-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              {/* Left Panel - AI Recipe Finder */}
+              <div className="lg:col-span-4">
+                <RecipeFinderPanel />
+              </div>
+              
+              {/* Center Panel - Food Inventory */}
+              <div className="lg:col-span-4">
+                <FoodInventoryPanel />
+              </div>
+              
+              {/* Right Panel - Shopping List & Extra Features */}
+              <div className="lg:col-span-4">
+                <ShoppingListPanel />
+              </div>
+            </div>
+          </div>
+        </main>
+        
+        <Footer />
       </div>
-    </div>
+    </ThemeProvider>
   );
 };
 
