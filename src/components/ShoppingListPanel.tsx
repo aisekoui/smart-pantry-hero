@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -149,29 +148,29 @@ export function ShoppingListPanel() {
     toast.info("Recipe note removed");
   };
   
-  // Sample data for demonstration
+  // Sample data for demonstration - meal plans now have blank recipe fields
   const sampleMealPlans: MealPlan[] = [
-    { id: "1", day: "Monday", meal: "Breakfast", recipe: "Avocado Toast" },
-    { id: "2", day: "Monday", meal: "Lunch", recipe: "Greek Salad" },
-    { id: "3", day: "Monday", meal: "Dinner", recipe: "Baked Salmon" },
-    { id: "4", day: "Tuesday", meal: "Breakfast", recipe: "Smoothie Bowl" },
-    { id: "5", day: "Tuesday", meal: "Lunch", recipe: "Quinoa Bowl" },
-    { id: "6", day: "Tuesday", meal: "Dinner", recipe: "Veggie Stir Fry" },
-    { id: "7", day: "Wednesday", meal: "Breakfast", recipe: "Oatmeal" },
-    { id: "8", day: "Wednesday", meal: "Lunch", recipe: "Chicken Wrap" },
-    { id: "9", day: "Wednesday", meal: "Dinner", recipe: "Pasta Primavera" },
-    { id: "10", day: "Thursday", meal: "Breakfast", recipe: "Yogurt Parfait" },
-    { id: "11", day: "Thursday", meal: "Lunch", recipe: "Tuna Sandwich" },
-    { id: "12", day: "Thursday", meal: "Dinner", recipe: "Beef Stir Fry" },
-    { id: "13", day: "Friday", meal: "Breakfast", recipe: "Scrambled Eggs" },
-    { id: "14", day: "Friday", meal: "Lunch", recipe: "Vegetable Soup" },
-    { id: "15", day: "Friday", meal: "Dinner", recipe: "Grilled Chicken" },
-    { id: "16", day: "Saturday", meal: "Breakfast", recipe: "French Toast" },
-    { id: "17", day: "Saturday", meal: "Lunch", recipe: "Caesar Salad" },
-    { id: "18", day: "Saturday", meal: "Dinner", recipe: "Pizza" },
-    { id: "19", day: "Sunday", meal: "Breakfast", recipe: "Pancakes" },
-    { id: "20", day: "Sunday", meal: "Lunch", recipe: "BLT Sandwich" },
-    { id: "21", day: "Sunday", meal: "Dinner", recipe: "Roast Beef" },
+    { id: "1", day: "Monday", meal: "Breakfast", recipe: "" },
+    { id: "2", day: "Monday", meal: "Lunch", recipe: "" },
+    { id: "3", day: "Monday", meal: "Dinner", recipe: "" },
+    { id: "4", day: "Tuesday", meal: "Breakfast", recipe: "" },
+    { id: "5", day: "Tuesday", meal: "Lunch", recipe: "" },
+    { id: "6", day: "Tuesday", meal: "Dinner", recipe: "" },
+    { id: "7", day: "Wednesday", meal: "Breakfast", recipe: "" },
+    { id: "8", day: "Wednesday", meal: "Lunch", recipe: "" },
+    { id: "9", day: "Wednesday", meal: "Dinner", recipe: "" },
+    { id: "10", day: "Thursday", meal: "Breakfast", recipe: "" },
+    { id: "11", day: "Thursday", meal: "Lunch", recipe: "" },
+    { id: "12", day: "Thursday", meal: "Dinner", recipe: "" },
+    { id: "13", day: "Friday", meal: "Breakfast", recipe: "" },
+    { id: "14", day: "Friday", meal: "Lunch", recipe: "" },
+    { id: "15", day: "Friday", meal: "Dinner", recipe: "" },
+    { id: "16", day: "Saturday", meal: "Breakfast", recipe: "" },
+    { id: "17", day: "Saturday", meal: "Lunch", recipe: "" },
+    { id: "18", day: "Saturday", meal: "Dinner", recipe: "" },
+    { id: "19", day: "Sunday", meal: "Breakfast", recipe: "" },
+    { id: "20", day: "Sunday", meal: "Lunch", recipe: "" },
+    { id: "21", day: "Sunday", meal: "Dinner", recipe: "" },
   ];
   
   const sampleRecipeNotes: RecipeNote[] = [
