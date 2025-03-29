@@ -3,7 +3,7 @@ import { Sparkles } from "lucide-react";
 
 export function RecipeFinderPanel() {
   return (
-    <div className="panel-container">
+    <div className="panel-container h-full">
       <div className="panel-header">
         <div className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-primary" />

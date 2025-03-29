@@ -15,13 +15,13 @@ const Index = () => {
         <main className="flex-grow">
           <div className="container py-6">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Left Panel - AI Recipe Finder */}
-              <div className="lg:col-span-4">
+              {/* Left Panel - AI Recipe Finder - Now takes more space */}
+              <div className="lg:col-span-5">
                 <RecipeFinderPanel />
               </div>
               
               {/* Center Panel - Food Inventory */}
-              <div className="lg:col-span-4">
+              <div className="lg:col-span-3">
                 <FoodInventoryPanel />
               </div>
               

@@ -2,9 +2,10 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Calendar, Heart, Check, X } from "lucide-react";
+import { Plus, Calendar, Edit, Check, X, Pencil, Save } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
 // Define the shopping item type
@@ -22,18 +23,23 @@ type MealPlan = {
   recipe: string;
 };
 
-// Define the favorite recipe type
-type FavoriteRecipe = {
+// Define the recipe note type
+type RecipeNote = {
   id: string;
-  name: string;
-  ingredients: string[];
+  title: string;
+  content: string;
 };
 
 export function ShoppingListPanel() {
   const [shoppingItems, setShoppingItems] = useState<ShoppingItem[]>([]);
   const [newItem, setNewItem] = useState("");
   const [mealPlans, setMealPlans] = useState<MealPlan[]>([]);
-  const [favoriteRecipes, setFavoriteRecipes] = useState<FavoriteRecipe[]>([]);
+  const [recipeNotes, setRecipeNotes] = useState<RecipeNote[]>([]);
+  const [editingMealId, setEditingMealId] = useState<string | null>(null);
+  const [editingMealValue, setEditingMealValue] = useState("");
+  const [newNoteTitle, setNewNoteTitle] = useState("");
+  const [newNoteContent, setNewNoteContent] = useState("");
+  const [isAddingNote, setIsAddingNote] = useState(false);
   
   // Load stored items on component mount
   useEffect(() => {
@@ -47,9 +53,9 @@ export function ShoppingListPanel() {
       setMealPlans(JSON.parse(storedMealPlans));
     }
     
-    const storedFavoriteRecipes = localStorage.getItem("favoriteRecipes");
-    if (storedFavoriteRecipes) {
-      setFavoriteRecipes(JSON.parse(storedFavoriteRecipes));
+    const storedRecipeNotes = localStorage.getItem("recipeNotes");
+    if (storedRecipeNotes) {
+      setRecipeNotes(JSON.parse(storedRecipeNotes));
     }
   }, []);
   
@@ -63,8 +69,8 @@ export function ShoppingListPanel() {
   }, [mealPlans]);
   
   useEffect(() => {
-    localStorage.setItem("favoriteRecipes", JSON.stringify(favoriteRecipes));
-  }, [favoriteRecipes]);
+    localStorage.setItem("recipeNotes", JSON.stringify(recipeNotes));
+  }, [recipeNotes]);
   
   // Add a new shopping item
   const addShoppingItem = () => {
@@ -95,6 +101,53 @@ export function ShoppingListPanel() {
     setShoppingItems(shoppingItems.filter(item => item.id !== id));
     toast.info("Item removed from shopping list");
   };
+
+  // Start editing a meal
+  const startEditingMeal = (id: string, currentValue: string) => {
+    setEditingMealId(id);
+    setEditingMealValue(currentValue);
+  };
+
+  // Save edited meal
+  const saveEditedMeal = (id: string) => {
+    if (editingMealValue.trim() === "") return;
+    
+    setMealPlans(
+      mealPlans.map(meal =>
+        meal.id === id ? { ...meal, recipe: editingMealValue } : meal
+      )
+    );
+    setEditingMealId(null);
+    toast.success("Meal plan updated!");
+  };
+
+  // Cancel editing
+  const cancelEditing = () => {
+    setEditingMealId(null);
+  };
+
+  // Add a new recipe note
+  const addRecipeNote = () => {
+    if (newNoteTitle.trim() === "") return;
+    
+    const newNote: RecipeNote = {
+      id: crypto.randomUUID(),
+      title: newNoteTitle,
+      content: newNoteContent,
+    };
+    
+    setRecipeNotes([...recipeNotes, newNote]);
+    setNewNoteTitle("");
+    setNewNoteContent("");
+    setIsAddingNote(false);
+    toast.success("Recipe note added!");
+  };
+
+  // Delete a recipe note
+  const deleteRecipeNote = (id: string) => {
+    setRecipeNotes(recipeNotes.filter(note => note.id !== id));
+    toast.info("Recipe note removed");
+  };
   
   // Sample data for demonstration
   const sampleMealPlans: MealPlan[] = [
@@ -106,21 +159,21 @@ export function ShoppingListPanel() {
     { id: "6", day: "Tuesday", meal: "Dinner", recipe: "Veggie Stir Fry" },
   ];
   
-  const sampleFavoriteRecipes: FavoriteRecipe[] = [
+  const sampleRecipeNotes: RecipeNote[] = [
     { 
       id: "1", 
-      name: "Classic Spaghetti", 
-      ingredients: ["Pasta", "Tomato Sauce", "Garlic", "Onion", "Ground Beef"]
+      title: "Classic Spaghetti", 
+      content: "Pasta, Tomato Sauce, Garlic, Onion, Ground Beef. Cook pasta al dente, sauté garlic and onion, add beef, then sauce. Mix and serve."
     },
     { 
       id: "2", 
-      name: "Greek Salad", 
-      ingredients: ["Cucumber", "Tomato", "Feta Cheese", "Olive Oil", "Olives"]
+      title: "Greek Salad", 
+      content: "Cucumber, Tomato, Feta Cheese, Olive Oil, Olives. Chop vegetables, add cheese and olives, dress with olive oil and lemon juice."
     },
     { 
       id: "3", 
-      name: "Avocado Toast", 
-      ingredients: ["Bread", "Avocado", "Lemon Juice", "Salt", "Pepper"]
+      title: "Avocado Toast", 
+      content: "Bread, Avocado, Lemon Juice, Salt, Pepper. Toast bread, mash avocado with lemon juice, spread on toast, season with salt and pepper."
     },
   ];
   
@@ -130,8 +183,8 @@ export function ShoppingListPanel() {
       setMealPlans(sampleMealPlans);
     }
     
-    if (favoriteRecipes.length === 0) {
-      setFavoriteRecipes(sampleFavoriteRecipes);
+    if (recipeNotes.length === 0) {
+      setRecipeNotes(sampleRecipeNotes);
     }
   }, []);
   
@@ -145,7 +198,7 @@ export function ShoppingListPanel() {
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="shopping">Shopping List</TabsTrigger>
           <TabsTrigger value="meal-plan">Meal Plan</TabsTrigger>
-          <TabsTrigger value="favorites">Favorites</TabsTrigger>
+          <TabsTrigger value="favorites">Recipe Notes</TabsTrigger>
         </TabsList>
         
         <TabsContent value="shopping" className="panel-content">
@@ -236,7 +289,49 @@ export function ShoppingListPanel() {
                         .map(plan => (
                           <div key={plan.id} className="flex justify-between text-sm bg-muted p-2 rounded-md">
                             <span className="font-medium">{plan.meal}:</span>
-                            <span>{plan.recipe}</span>
+                            
+                            {editingMealId === plan.id ? (
+                              <div className="flex items-center gap-1">
+                                <Input 
+                                  value={editingMealValue}
+                                  onChange={(e) => setEditingMealValue(e.target.value)}
+                                  className="h-6 py-1 w-32"
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      saveEditedMeal(plan.id);
+                                    }
+                                  }}
+                                />
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="h-6 w-6" 
+                                  onClick={() => saveEditedMeal(plan.id)}
+                                >
+                                  <Check className="h-3 w-3" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="h-6 w-6" 
+                                  onClick={cancelEditing}
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1">
+                                <span>{plan.recipe}</span>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="h-6 w-6 ml-1" 
+                                  onClick={() => startEditingMeal(plan.id, plan.recipe)}
+                                >
+                                  <Pencil className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            )}
                           </div>
                         ))}
                       {mealPlans.filter(plan => plan.day === day).length === 0 && (
@@ -256,21 +351,79 @@ export function ShoppingListPanel() {
           <Card>
             <CardHeader className="pb-2">
               <div className="flex justify-between items-center">
-                <CardTitle className="text-lg">Favorite Recipes</CardTitle>
-                <Heart className="h-5 w-5 text-red-500" />
+                <CardTitle className="text-lg">Recipe Notes</CardTitle>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => setIsAddingNote(true)}
+                  className="h-7 w-7"
+                >
+                  <Plus className="h-5 w-5 text-primary" />
+                </Button>
               </div>
             </CardHeader>
             <CardContent>
+              {isAddingNote ? (
+                <div className="space-y-3 mb-4 border rounded-md p-3">
+                  <Input 
+                    placeholder="Note title..." 
+                    value={newNoteTitle}
+                    onChange={(e) => setNewNoteTitle(e.target.value)}
+                  />
+                  <Textarea 
+                    placeholder="Write your recipe note here..." 
+                    value={newNoteContent}
+                    onChange={(e) => setNewNoteContent(e.target.value)}
+                    className="min-h-[100px]"
+                  />
+                  <div className="flex justify-end gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => {
+                        setIsAddingNote(false);
+                        setNewNoteTitle("");
+                        setNewNoteContent("");
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      onClick={addRecipeNote}
+                    >
+                      <Save className="h-4 w-4 mr-2" />
+                      Save Note
+                    </Button>
+                  </div>
+                </div>
+              ) : null}
+              
               <div className="space-y-3 max-h-[400px] overflow-y-auto">
-                {favoriteRecipes.map(recipe => (
-                  <div key={recipe.id} className="border rounded-md p-3 hover:bg-muted/50">
-                    <h4 className="font-medium mb-1">{recipe.name}</h4>
-                    <div className="text-sm text-muted-foreground">
-                      <span className="font-medium">Ingredients: </span>
-                      {recipe.ingredients.join(", ")}
+                {recipeNotes.map(note => (
+                  <div key={note.id} className="border rounded-md p-3 hover:bg-muted/50">
+                    <div className="flex justify-between items-start mb-1">
+                      <h4 className="font-medium">{note.title}</h4>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => deleteRecipeNote(note.id)}
+                      >
+                        <X className="h-4 w-4 text-muted-foreground" />
+                      </Button>
                     </div>
+                    <p className="text-sm text-muted-foreground whitespace-pre-line">
+                      {note.content}
+                    </p>
                   </div>
                 ))}
+                
+                {recipeNotes.length === 0 && !isAddingNote && (
+                  <div className="text-center py-4 text-muted-foreground">
+                    No recipe notes yet. Click the + button to add one!
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
