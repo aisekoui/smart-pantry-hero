@@ -12,14 +12,14 @@ const Index = () => {
       <div className="flex min-h-screen flex-col">
         <Header />
         
-        <main className="flex-grow">
-          <div className="container py-6">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Left Panel - AI Recipe Finder - Now takes more space */}
-              <div className="lg:col-span-5">
-                <RecipeFinderPanel />
-              </div>
-              
+        <main className="flex-grow flex flex-col lg:flex-row">
+          {/* Left Panel - AI Recipe Finder - Now extends to edge */}
+          <div className="lg:w-1/3">
+            <RecipeFinderPanel />
+          </div>
+          
+          <div className="container py-6 lg:w-2/3">
+            <div className="grid grid-cols-1 lg:grid-cols-7 gap-6">
               {/* Center Panel - Food Inventory */}
               <div className="lg:col-span-3">
                 <FoodInventoryPanel />

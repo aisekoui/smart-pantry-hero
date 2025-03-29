@@ -157,6 +157,21 @@ export function ShoppingListPanel() {
     { id: "4", day: "Tuesday", meal: "Breakfast", recipe: "Smoothie Bowl" },
     { id: "5", day: "Tuesday", meal: "Lunch", recipe: "Quinoa Bowl" },
     { id: "6", day: "Tuesday", meal: "Dinner", recipe: "Veggie Stir Fry" },
+    { id: "7", day: "Wednesday", meal: "Breakfast", recipe: "Oatmeal" },
+    { id: "8", day: "Wednesday", meal: "Lunch", recipe: "Chicken Wrap" },
+    { id: "9", day: "Wednesday", meal: "Dinner", recipe: "Pasta Primavera" },
+    { id: "10", day: "Thursday", meal: "Breakfast", recipe: "Yogurt Parfait" },
+    { id: "11", day: "Thursday", meal: "Lunch", recipe: "Tuna Sandwich" },
+    { id: "12", day: "Thursday", meal: "Dinner", recipe: "Beef Stir Fry" },
+    { id: "13", day: "Friday", meal: "Breakfast", recipe: "Scrambled Eggs" },
+    { id: "14", day: "Friday", meal: "Lunch", recipe: "Vegetable Soup" },
+    { id: "15", day: "Friday", meal: "Dinner", recipe: "Grilled Chicken" },
+    { id: "16", day: "Saturday", meal: "Breakfast", recipe: "French Toast" },
+    { id: "17", day: "Saturday", meal: "Lunch", recipe: "Caesar Salad" },
+    { id: "18", day: "Saturday", meal: "Dinner", recipe: "Pizza" },
+    { id: "19", day: "Sunday", meal: "Breakfast", recipe: "Pancakes" },
+    { id: "20", day: "Sunday", meal: "Lunch", recipe: "BLT Sandwich" },
+    { id: "21", day: "Sunday", meal: "Dinner", recipe: "Roast Beef" },
   ];
   
   const sampleRecipeNotes: RecipeNote[] = [
