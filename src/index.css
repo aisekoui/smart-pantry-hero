@@ -77,6 +77,20 @@
 @layer base {
   * {
     @apply border-border;
+    box-sizing: border-box;
+  }
+
+  [data-theme="dark"] {
+    color-scheme: dark only;
+  }
+  
+  [data-theme="light"],
+  html {
+    color-scheme: light only;
+  }
+  
+  @media(prefers-color-scheme: dark) {
+    color-scheme: dark only;
   }
 
   /* Blueprint background pattern */
@@ -102,49 +116,69 @@
     view-transition-name: body;
   }
 
-  [data-theme="dark"] {
-    color-scheme: dark only;
-  }
-  
-  [data-theme="light"],
-  html {
-    color-scheme: light only;
-  }
-  
-  @media(prefers-color-scheme: dark) {
-    color-scheme: dark only;
-  }
-
   h1, h2, h3, h4, h5, h6 {
     @apply font-playfair;
+  }
+
+  /* Theme toggle button styles */
+  [aria-pressed=true] path:nth-of-type(1) {
+    display: none;
+  }
+
+  [aria-pressed=false] path:nth-of-type(2) {
+    display: none;
   }
 
   /* View Transitions */
   ::view-transition-new(body),
   ::view-transition-old(body) {
-    animation: theme-transition 0.5s ease-in-out;
+    animation: pan 1s ease-in-out;
     backface-visibility: hidden;
-    box-shadow: 2.2px 61.3px 73.1px -2px hsl(0 0% 0% / 0.38);
+    box-shadow: 2.2px 61.3px 73.1px -2px hsl(0 0% 0% / 0.58);
   }
 
   ::view-transition-new(body) {
-    --direction: 180deg;
+    --sr: 180deg;
+    background: canvas;
   }
 
   ::view-transition-old(body) {
-    --direction: 0deg;
+    --sr: 0deg;
+    backface-visibility: hidden;
   }
 
-  @keyframes theme-transition {
+  @keyframes pan {
     0% {
-      transform: scale(1) rotateY(var(--direction));
+      transform: scale(1) rotateY(var(--sr));
     }
-    50% {
-      transform: scale(0.95) rotateY(calc(var(--direction) + 90deg));
+    25% {
+      transform: scale(0.5) rotateY(var(--sr));
+      box-shadow: 1.8px 50.7px 51.4px -3.2px hsl(0 0% 0% / 0.32);
+    }
+    75% {
+      transform: scale(0.5) rotateY(calc(var(--sr) + 180deg));
+      box-shadow: 1.8px 50.7px 51.4px -3.2px hsl(0 0% 0% / 0.32);
     }
     100% {
-      transform: scale(1) rotateY(calc(var(--direction) + 180deg));
+      transform: scale(1) rotateY(calc(var(--sr) + 180deg));
     }
+  }
+
+  :root {
+    view-transition-name: none;
+  }
+
+  /* Screen reader only */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
 
   /* Custom scrollbar */
@@ -163,19 +197,6 @@
 
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-primary/80;
-  }
-
-  /* Screen reader only */
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
   }
 }
 

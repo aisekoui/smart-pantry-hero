@@ -33,21 +33,21 @@ export function ThemeProvider({
 
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove("light", "dark");
-    root.setAttribute("data-theme", theme);
-
+    
     if (theme === "system") {
       const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
         .matches
         ? "dark"
         : "light";
 
-      root.classList.add(systemTheme);
+      root.classList.remove("light", "dark");
       root.setAttribute("data-theme", systemTheme);
       return;
     }
 
+    root.classList.remove("light", "dark");
     root.classList.add(theme);
+    root.setAttribute("data-theme", theme);
   }, [theme]);
 
   const value = {
