@@ -74,10 +74,51 @@
 
   body {
     @apply bg-background text-foreground transition-colors duration-300 font-poppins;
+    view-transition-name: body;
+  }
+
+  [data-theme="dark"] {
+    color-scheme: dark only;
+  }
+  
+  [data-theme="light"],
+  html {
+    color-scheme: light only;
+  }
+  
+  @media(prefers-color-scheme: dark) {
+    color-scheme: dark only;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-playfair;
+  }
+
+  /* View Transitions */
+  ::view-transition-new(body),
+  ::view-transition-old(body) {
+    animation: theme-transition 0.5s ease-in-out;
+    backface-visibility: hidden;
+  }
+
+  ::view-transition-new(body) {
+    --direction: 180deg;
+  }
+
+  ::view-transition-old(body) {
+    --direction: 0deg;
+  }
+
+  @keyframes theme-transition {
+    0% {
+      transform: scale(1) rotateY(var(--direction));
+    }
+    50% {
+      transform: scale(0.98) rotateY(calc(var(--direction) + 90deg));
+    }
+    100% {
+      transform: scale(1) rotateY(calc(var(--direction) + 180deg));
+    }
   }
 
   /* Custom scrollbar */
@@ -96,6 +137,19 @@
 
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-primary/80;
+  }
+
+  /* Screen reader only */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
 }
 
