@@ -40,13 +40,10 @@ export function ThemeProvider({
         ? "dark"
         : "light";
 
-      root.classList.remove("light", "dark");
       root.setAttribute("data-theme", systemTheme);
       return;
     }
 
-    root.classList.remove("light", "dark");
-    root.classList.add(theme);
     root.setAttribute("data-theme", theme);
   }, [theme]);
 
