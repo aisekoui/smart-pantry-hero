@@ -34,6 +34,10 @@
     --ring: 150 55% 40%;
 
     --radius: 0.5rem;
+
+    /* Blueprint grid variables */
+    --grid-size: 30px;
+    --grid-line: color-mix(in lch, var(--foreground), transparent 85%);
   }
 
   .dark {
@@ -64,6 +68,9 @@
     --border: 150 20% 25%;
     --input: 150 20% 25%;
     --ring: 150 55% 50%;
+
+    /* Blueprint grid variables for dark mode */
+    --grid-line: color-mix(in lch, var(--foreground), transparent 85%);
   }
 }
 
@@ -72,8 +79,26 @@
     @apply border-border;
   }
 
+  /* Blueprint background pattern */
+  body::before {
+    content: '';
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    background: radial-gradient(
+      4px 4px at 50% 50%,
+      var(--grid-line) 2px,
+      transparent 2px var(--grid-size)
+    ) 50% 50% / var(--grid-size) var(--grid-size);
+    mask: linear-gradient(-25deg, transparent 30%, white);
+    top: 0;
+    transform-style: flat;
+    pointer-events: none;
+    z-index: -1;
+  }
+
   body {
-    @apply bg-background text-foreground transition-colors duration-300 font-poppins;
+    @apply bg-background text-foreground font-poppins;
     view-transition-name: body;
   }
 
@@ -99,6 +124,7 @@
   ::view-transition-old(body) {
     animation: theme-transition 0.5s ease-in-out;
     backface-visibility: hidden;
+    box-shadow: 2.2px 61.3px 73.1px -2px hsl(0 0% 0% / 0.38);
   }
 
   ::view-transition-new(body) {
@@ -114,7 +140,7 @@
       transform: scale(1) rotateY(var(--direction));
     }
     50% {
-      transform: scale(0.98) rotateY(calc(var(--direction) + 90deg));
+      transform: scale(0.95) rotateY(calc(var(--direction) + 90deg));
     }
     100% {
       transform: scale(1) rotateY(calc(var(--direction) + 180deg));
