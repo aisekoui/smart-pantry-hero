@@ -1,12 +1,51 @@
 
+import { useState, useEffect } from "react";
 import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "@/components/ui/button";
-import { User } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { 
+  DropdownMenu, 
+  DropdownMenuTrigger, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuSeparator 
+} from "@/components/ui/dropdown-menu";
+import { User, LogOut, Settings, ChefHat } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
+
+interface UserData {
+  isLoggedIn: boolean;
+  username: string;
+  email: string;
+  avatar: string | null;
+}
 
 export function Header() {
-  // This would normally come from an auth context
-  const isLoggedIn = true; // For testing purposes, we're always logged in
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Check for user data in localStorage
+    const storedUser = localStorage.getItem("smartPantryUser");
+    if (storedUser) {
+      setUserData(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    // Clear user data and redirect to login
+    localStorage.removeItem("smartPantryUser");
+    setUserData(null);
+    
+    toast({
+      title: "Logged out successfully",
+      description: "See you next time!",
+    });
+    
+    navigate("/auth");
+  };
   
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
@@ -21,14 +60,57 @@ export function Header() {
           <h1 className="text-2xl font-bold text-primary font-playfair">Smart Pantry</h1>
         </div>
         <div className="flex items-center gap-3 justify-end flex-1">
-          {isLoggedIn ? (
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <User className="h-5 w-5" />
-            </Button>
+          {userData?.isLoggedIn ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full relative group">
+                  <Avatar className="h-8 w-8 transition-transform group-hover:scale-110">
+                    {userData.avatar ? (
+                      <AvatarImage src={userData.avatar} alt={userData.username} />
+                    ) : (
+                      <AvatarFallback className="bg-primary text-primary-foreground">
+                        {userData.username.substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                  <span className="absolute -bottom-1 -right-1 flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="flex items-center justify-start gap-2 p-2">
+                  <div className="flex flex-col space-y-1 leading-none">
+                    <p className="font-medium">{userData.username}</p>
+                    <p className="text-xs text-muted-foreground">{userData.email}</p>
+                  </div>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="cursor-pointer">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
+                  <ChefHat className="mr-2 h-4 w-4" />
+                  <span>Meal Plans</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <Link to="/auth">
-              <Button variant="outline" size="sm">
+              <Button variant="default" size="sm" className="group">
                 Login
+                <User className="ml-2 h-4 w-4 transition-transform group-hover:scale-110" />
               </Button>
             </Link>
           )}
