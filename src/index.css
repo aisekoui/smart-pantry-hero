@@ -34,6 +34,10 @@
     --ring: 150 55% 40%;
 
     --radius: 0.5rem;
+    
+    /* Grid pattern variables */
+    --grid-size: 30px;
+    --grid-line: color-mix(in lch, hsl(var(--foreground)), transparent 85%);
   }
 
   .dark {
@@ -64,6 +68,9 @@
     --border: 150 20% 25%;
     --input: 150 20% 25%;
     --ring: 150 55% 50%;
+    
+    /* Grid pattern variables for dark mode */
+    --grid-line: color-mix(in lch, hsl(var(--foreground)), transparent 85%);
   }
 }
 
@@ -74,6 +81,27 @@
 
   body {
     @apply bg-background text-foreground transition-colors duration-300 font-poppins;
+    /* Grid background pattern */
+    position: relative;
+  }
+  
+  /* Grid background pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+    background: 
+      radial-gradient(4px 4px at 50% 50%,
+        var(--grid-line) 2px,
+        transparent 2px var(--grid-size)
+      ) 50% 50% / var(--grid-size) var(--grid-size);
+    opacity: 0.6;
+    mask: linear-gradient(-25deg, transparent 10%, white);
   }
 
   h1, h2, h3, h4, h5, h6 {
