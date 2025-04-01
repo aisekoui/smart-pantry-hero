@@ -1,37 +1,66 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/components/ui/use-toast";
-import { Mail, Lock, User, ArrowRight } from "lucide-react";
+import { Mail, Lock, User, ArrowRight, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Auth = () => {
   const [isRightPanelActive, setIsRightPanelActive] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
+  const [signUpEmail, setSignUpEmail] = useState('');
+  const [signUpPassword, setSignUpPassword] = useState('');
+  const [signUpUsername, setSignUpUsername] = useState('');
+  const [signInEmail, setSignInEmail] = useState('');
+  const [signInPassword, setSignInPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  useEffect(() => {
+    // Check if user is already logged in
+    const storedUser = localStorage.getItem("smartPantryUser");
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      if (user.isLoggedIn) {
+        navigate('/');
+      }
+    }
+  }, [navigate]);
+
   const handleSignInClick = () => {
     setIsRightPanelActive(false);
+    setError(null);
   };
 
   const handleSignUpClick = () => {
     setIsRightPanelActive(true);
+    setError(null);
   };
 
   const handleSubmitSignIn = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would validate and authenticate the user
-    if (email && password) {
+    setError(null);
+    
+    // Check if there are registered users
+    const registeredUsers = localStorage.getItem("registeredUsers");
+    
+    if (!registeredUsers) {
+      setError("No registered users found. Please sign up first.");
+      return;
+    }
+    
+    const users = JSON.parse(registeredUsers);
+    const user = users.find((u: any) => u.email === signInEmail && u.password === signInPassword);
+    
+    if (user) {
       // Store login state in localStorage
       localStorage.setItem('smartPantryUser', JSON.stringify({
-        email,
+        email: user.email,
         isLoggedIn: true,
-        username: email.split('@')[0],
+        username: user.username,
         avatar: null
       }));
       
@@ -42,39 +71,53 @@ const Auth = () => {
       
       navigate('/');
     } else {
-      toast({
-        title: "Login failed",
-        description: "Please fill in all required fields",
-        variant: "destructive",
-      });
+      setError("Invalid email or password. Please try again.");
     }
   };
 
   const handleSubmitSignUp = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would validate and create a user account
-    if (email && password && username) {
-      // Store user data in localStorage
-      localStorage.setItem('smartPantryUser', JSON.stringify({
-        email,
-        isLoggedIn: true,
-        username,
-        avatar: null
-      }));
-      
-      toast({
-        title: "Account created!",
-        description: "Welcome to Smart Pantry",
-      });
-      
-      navigate('/');
-    } else {
-      toast({
-        title: "Registration failed",
-        description: "Please fill in all required fields",
-        variant: "destructive",
-      });
+    setError(null);
+
+    // Validate fields
+    if (!signUpEmail || !signUpPassword || !signUpUsername) {
+      setError("Please fill in all required fields");
+      return;
     }
+
+    // Get existing registered users or create new array
+    const registeredUsers = localStorage.getItem("registeredUsers");
+    const users = registeredUsers ? JSON.parse(registeredUsers) : [];
+    
+    // Check if user with this email already exists
+    if (users.some((user: any) => user.email === signUpEmail)) {
+      setError("A user with this email already exists");
+      return;
+    }
+
+    // Add new user
+    users.push({
+      username: signUpUsername,
+      email: signUpEmail,
+      password: signUpPassword,
+      registered: new Date().toISOString()
+    });
+    
+    // Store updated users array
+    localStorage.setItem("registeredUsers", JSON.stringify(users));
+    
+    toast({
+      title: "Account created successfully!",
+      description: "You can now sign in with your credentials",
+    });
+    
+    // Switch to sign in panel
+    setIsRightPanelActive(false);
+    
+    // Clear sign up form
+    setSignUpEmail('');
+    setSignUpPassword('');
+    setSignUpUsername('');
   };
 
   return (
@@ -98,6 +141,13 @@ const Auth = () => {
               <p className="text-muted-foreground text-center max-w-xs">Join Smart Pantry to start organizing your kitchen intelligently</p>
             </div>
 
+            {error && isRightPanelActive && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
             <form onSubmit={handleSubmitSignUp} className="w-full space-y-4">
               <div className="flex items-center space-x-2 border rounded-md px-3 bg-background">
                 <User className="h-4 w-4 text-muted-foreground" />
@@ -105,8 +155,8 @@ const Auth = () => {
                   type="text" 
                   placeholder="Username" 
                   className="border-0 focus-visible:ring-0" 
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={signUpUsername}
+                  onChange={(e) => setSignUpUsername(e.target.value)}
                 />
               </div>
               <div className="flex items-center space-x-2 border rounded-md px-3 bg-background">
@@ -115,8 +165,8 @@ const Auth = () => {
                   type="email" 
                   placeholder="Email" 
                   className="border-0 focus-visible:ring-0" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={signUpEmail}
+                  onChange={(e) => setSignUpEmail(e.target.value)}
                 />
               </div>
               <div className="flex items-center space-x-2 border rounded-md px-3 bg-background">
@@ -125,8 +175,8 @@ const Auth = () => {
                   type="password" 
                   placeholder="Password" 
                   className="border-0 focus-visible:ring-0" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={signUpPassword}
+                  onChange={(e) => setSignUpPassword(e.target.value)}
                 />
               </div>
               <Button type="submit" className="w-full group">
@@ -151,6 +201,13 @@ const Auth = () => {
               <p className="text-muted-foreground text-center max-w-xs">Sign in to access your Smart Pantry account</p>
             </div>
 
+            {error && !isRightPanelActive && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
             <form onSubmit={handleSubmitSignIn} className="w-full space-y-4">
               <div className="flex items-center space-x-2 border rounded-md px-3 bg-background">
                 <Mail className="h-4 w-4 text-muted-foreground" />
@@ -158,8 +215,8 @@ const Auth = () => {
                   type="email" 
                   placeholder="Email" 
                   className="border-0 focus-visible:ring-0" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={signInEmail}
+                  onChange={(e) => setSignInEmail(e.target.value)}
                 />
               </div>
               <div className="flex items-center space-x-2 border rounded-md px-3 bg-background">
@@ -168,8 +225,8 @@ const Auth = () => {
                   type="password" 
                   placeholder="Password" 
                   className="border-0 focus-visible:ring-0" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={signInPassword}
+                  onChange={(e) => setSignInPassword(e.target.value)}
                 />
               </div>
               <a href="#" className="block text-sm text-primary hover:underline text-right">
@@ -179,6 +236,16 @@ const Auth = () => {
                 Sign In
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
+              <p className="text-sm text-center text-muted-foreground mt-4">
+                Don't have an account yet?{" "}
+                <button 
+                  type="button"
+                  onClick={handleSignUpClick} 
+                  className="text-primary hover:underline"
+                >
+                  Sign up here
+                </button>
+              </p>
             </form>
           </div>
         </div>

@@ -35,10 +35,10 @@
 
     --radius: 0.5rem;
     
-    /* Grid pattern variables */
+    /* Grid pattern variables - made more noticeable */
     --grid-size: 24px;
-    --grid-line: color-mix(in lch, hsl(var(--foreground)), transparent 75%);
-    --grid-dot-size: 1.5px;
+    --grid-line: color-mix(in lch, hsl(var(--foreground)), transparent 65%);
+    --grid-dot-size: 2px;
   }
 
   .dark {
@@ -70,9 +70,9 @@
     --input: 150 20% 25%;
     --ring: 150 55% 50%;
     
-    /* Grid pattern variables for dark mode */
-    --grid-line: color-mix(in lch, hsl(var(--foreground)), transparent 75%);
-    --grid-dot-size: 1.5px;
+    /* Grid pattern variables for dark mode - made more noticeable */
+    --grid-line: color-mix(in lch, hsl(var(--foreground)), transparent 65%);
+    --grid-dot-size: 2px;
   }
 }
 
@@ -87,7 +87,7 @@
     position: relative;
   }
   
-  /* Grid background pattern */
+  /* Grid background pattern - increased opacity for better visibility */
   body::before {
     content: '';
     position: fixed;
@@ -100,7 +100,7 @@
     background: 
       linear-gradient(to right, var(--grid-line) 1px, transparent 1px) 50% 50% / var(--grid-size) var(--grid-size),
       linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px) 50% 50% / var(--grid-size) var(--grid-size);
-    opacity: 0.6;
+    opacity: 0.8;
     mask: linear-gradient(-25deg, transparent 5%, white);
   }
 
