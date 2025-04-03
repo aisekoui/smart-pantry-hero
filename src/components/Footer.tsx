@@ -1,8 +1,31 @@
 
-import { Github, Heart } from "lucide-react";
+import { Github, Heart, Mail, Phone } from "lucide-react";
+import { 
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  
+  const teamMembers = [
+    {
+      name: "Kris Daniel Bendicio",
+      email: "krisdanielbendicio12@gmail.com",
+      phone: "09683125168"
+    },
+    {
+      name: "Luis Kayne Dela Cruz",
+      email: "luiskayne.delacruz2@gmail.com",
+      phone: "09560852236"
+    },
+    {
+      name: "Raymund Macaraeg",
+      email: "raymund.macaraeg.320401@gmail.com",
+      phone: "09683125094"
+    }
+  ];
   
   return (
     <footer className="w-full border-t bg-muted/50 py-6">
@@ -12,6 +35,31 @@ export function Footer() {
             <span className="text-sm text-muted-foreground">
               © {currentYear} Smart Pantry. All rights reserved.
             </span>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 md:mb-0">
+            {teamMembers.map((member) => (
+              <HoverCard key={member.name}>
+                <HoverCardTrigger asChild>
+                  <div className="text-sm font-medium cursor-pointer hover:text-primary transition-colors">
+                    {member.name}
+                  </div>
+                </HoverCardTrigger>
+                <HoverCardContent className="w-80">
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-semibold">{member.name}</h4>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Mail className="h-4 w-4" />
+                      <span>{member.email}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Phone className="h-4 w-4" />
+                      <span>{member.phone}</span>
+                    </div>
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
+            ))}
           </div>
           
           <div className="flex items-center space-x-6">
