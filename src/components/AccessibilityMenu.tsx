@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Eye, TextSize, ZoomIn, ZoomOut } from "lucide-react";
+import { Eye, Type, ZoomIn, ZoomOut } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -67,7 +67,7 @@ export function AccessibilityMenu() {
             
             <div className="pt-2">
               <Label className="flex items-center gap-2 mb-2">
-                <TextSize className="h-4 w-4" />
+                <Type className="h-4 w-4" />
                 <span>Text Size</span>
               </Label>
               <RadioGroup 
