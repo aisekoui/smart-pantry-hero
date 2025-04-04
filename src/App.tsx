@@ -36,11 +36,52 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   
   useEffect(() => {
     console.log("ProtectedRoute checking auth for path:", location.pathname);
-    const user = localStorage.getItem("smartPantryUser");
-    const authStatus = !!user;
-    setIsAuthenticated(authStatus);
-    console.log("Auth status:", authStatus ? "Authenticated" : "Not authenticated");
+    checkAuthStatus();
   }, [location.pathname]);
+
+  const checkAuthStatus = () => {
+    // First check localStorage
+    const storedUser = localStorage.getItem("smartPantryUser");
+    
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+        if (user.isLoggedIn) {
+          console.log("User authenticated via localStorage");
+          
+          // Also sync to sessionStorage for consistent state across tabs
+          sessionStorage.setItem("smartPantryUser", storedUser);
+          
+          setIsAuthenticated(true);
+          return;
+        }
+      } catch (e) {
+        console.error("Error parsing user from localStorage", e);
+      }
+    }
+    
+    // If not in localStorage, check sessionStorage
+    const sessionUser = sessionStorage.getItem("smartPantryUser");
+    if (sessionUser) {
+      try {
+        const user = JSON.parse(sessionUser);
+        if (user.isLoggedIn) {
+          console.log("User authenticated via sessionStorage");
+          
+          // Sync back to localStorage
+          localStorage.setItem("smartPantryUser", sessionUser);
+          
+          setIsAuthenticated(true);
+          return;
+        }
+      } catch (e) {
+        console.error("Error parsing user from sessionStorage", e);
+      }
+    }
+    
+    console.log("Not authenticated");
+    setIsAuthenticated(false);
+  };
 
   if (isAuthenticated === null) {
     // Still checking authentication

@@ -21,15 +21,36 @@ const Auth = () => {
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    // Check if user is already logged in
-    const storedUser = localStorage.getItem("smartPantryUser");
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      if (user.isLoggedIn) {
-        navigate('/');
-      }
-    }
+    checkAuthStatus();
   }, [navigate]);
+
+  const checkAuthStatus = () => {
+    try {
+      const storedUser = localStorage.getItem("smartPantryUser");
+      
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        if (user.isLoggedIn) {
+          console.log("User already logged in via localStorage");
+          navigate('/');
+          return;
+        }
+      }
+      
+      const sessionUser = sessionStorage.getItem("smartPantryUser");
+      if (sessionUser) {
+        const user = JSON.parse(sessionUser);
+        if (user.isLoggedIn) {
+          console.log("User already logged in via sessionStorage");
+          localStorage.setItem("smartPantryUser", sessionUser);
+          navigate('/');
+          return;
+        }
+      }
+    } catch (error) {
+      console.error("Error checking auth status:", error);
+    }
+  };
 
   const handleSignInClick = () => {
     setIsRightPanelActive(false);
@@ -45,80 +66,94 @@ const Auth = () => {
     e.preventDefault();
     setError(null);
     
-    // Check if there are registered users
-    const registeredUsers = localStorage.getItem("registeredUsers");
-    
-    if (!registeredUsers) {
-      setError("No registered users found. Please sign up first.");
-      return;
-    }
-    
-    const users = JSON.parse(registeredUsers);
-    const user = users.find((u: any) => u.email === signInEmail && u.password === signInPassword);
-    
-    if (user) {
-      // Store login state in localStorage
-      localStorage.setItem('smartPantryUser', JSON.stringify({
-        email: user.email,
-        isLoggedIn: true,
-        username: user.username,
-        avatar: null
-      }));
+    try {
+      const registeredUsers = localStorage.getItem("registeredUsers") || "[]";
       
-      toast({
-        title: "Login successful!",
-        description: "Welcome back to Smart Pantry",
-      });
+      const users = JSON.parse(registeredUsers);
+      const user = users.find((u: any) => u.email === signInEmail && u.password === signInPassword);
       
-      navigate('/');
-    } else {
-      setError("Invalid email or password. Please try again.");
+      if (user) {
+        const userData = {
+          email: user.email,
+          isLoggedIn: true,
+          username: user.username,
+          avatar: null,
+          userId: user.userId || generateUserId(user.email)
+        };
+        
+        localStorage.setItem('smartPantryUser', JSON.stringify(userData));
+        sessionStorage.setItem('smartPantryUser', JSON.stringify(userData));
+        
+        toast({
+          title: "Login successful!",
+          description: "Welcome back to Smart Pantry"
+        });
+        
+        navigate('/');
+      } else {
+        setError("Invalid email or password. Please try again.");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("An error occurred during login. Please try again.");
     }
+  };
+
+  const generateUserId = (email: string): string => {
+    return `user_${Date.now()}_${email.split('@')[0]}`;
   };
 
   const handleSubmitSignUp = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    // Validate fields
     if (!signUpEmail || !signUpPassword || !signUpUsername) {
       setError("Please fill in all required fields");
       return;
     }
 
-    // Get existing registered users or create new array
-    const registeredUsers = localStorage.getItem("registeredUsers");
-    const users = registeredUsers ? JSON.parse(registeredUsers) : [];
-    
-    // Check if user with this email already exists
-    if (users.some((user: any) => user.email === signUpEmail)) {
-      setError("A user with this email already exists");
-      return;
-    }
+    try {
+      const registeredUsers = localStorage.getItem("registeredUsers");
+      const users = registeredUsers ? JSON.parse(registeredUsers) : [];
+      
+      if (users.some((user: any) => user.email === signUpEmail)) {
+        setError("A user with this email already exists");
+        return;
+      }
 
-    // Add new user
-    users.push({
-      username: signUpUsername,
-      email: signUpEmail,
-      password: signUpPassword,
-      registered: new Date().toISOString()
-    });
-    
-    // Store updated users array
-    localStorage.setItem("registeredUsers", JSON.stringify(users));
-    
-    toast({
-      title: "Account created successfully!",
-      description: "You can now sign in with your credentials",
-    });
-    
-    // Switch to sign in panel
-    setIsRightPanelActive(false);
-    
-    // Clear sign up form
-    setSignUpEmail('');
-    setSignUpPassword('');
-    setSignUpUsername('');
+      const userId = generateUserId(signUpEmail);
+
+      users.push({
+        userId,
+        username: signUpUsername,
+        email: signUpEmail,
+        password: signUpPassword,
+        registered: new Date().toISOString()
+      });
+      
+      localStorage.setItem("registeredUsers", JSON.stringify(users));
+      
+      const userData = {
+        email: signUpEmail,
+        isLoggedIn: true,
+        username: signUpUsername,
+        avatar: null,
+        userId
+      };
+      
+      localStorage.setItem('smartPantryUser', JSON.stringify(userData));
+      sessionStorage.setItem('smartPantryUser', JSON.stringify(userData));
+      
+      toast({
+        title: "Account created successfully!",
+        description: "Welcome to Smart Pantry"
+      });
+      
+      navigate('/');
+    } catch (error) {
+      console.error("Registration error:", error);
+      setError("An error occurred during registration. Please try again.");
+    }
   };
 
   if (isMobile) {
@@ -270,7 +305,6 @@ const Auth = () => {
           isRightPanelActive ? 'auth-container-right-active' : ''
         }`}
       >
-        {/* Sign Up Form */}
         <div className="absolute top-0 left-0 z-10 h-full w-1/2 transform opacity-0 transition-all duration-600 ease-in-out 
           auth-container-signup">
           <div className="flex h-full flex-col items-center justify-center bg-card px-10 py-8">
@@ -329,7 +363,6 @@ const Auth = () => {
           </div>
         </div>
 
-        {/* Sign In Form */}
         <div className="absolute top-0 left-0 z-20 h-full w-1/2 transition-all duration-600 ease-in-out 
           auth-container-signin">
           <div className="flex h-full flex-col items-center justify-center bg-card px-10 py-8">
@@ -392,11 +425,9 @@ const Auth = () => {
           </div>
         </div>
 
-        {/* Overlay */}
         <div className="absolute top-0 left-1/2 z-100 h-full w-1/2 overflow-hidden transition-transform duration-600 ease-in-out
           auth-container-overlay">
           <div className="relative h-full w-[200%] -left-full transform translate-x-0 transition-transform duration-600 ease-in-out bg-gradient-to-r from-primary/90 to-primary auth-overlay">
-            {/* Left Panel */}
             <div className="absolute top-0 flex h-full w-1/2 flex-col items-center justify-center transform -translate-x-[20%] transition-transform duration-600 ease-in-out text-center
               auth-overlay-left">
               <h2 className="text-2xl font-bold mb-4 text-white font-playfair">Welcome Back!</h2>
@@ -419,7 +450,6 @@ const Auth = () => {
               </Button>
             </div>
             
-            {/* Right Panel */}
             <div className="absolute top-0 right-0 flex h-full w-1/2 flex-col items-center justify-center transform translate-x-0 transition-transform duration-600 ease-in-out text-center
               auth-overlay-right">
               <h2 className="text-2xl font-bold mb-4 text-white font-playfair">Hello, Friend!</h2>

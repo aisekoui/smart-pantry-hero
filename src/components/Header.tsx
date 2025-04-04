@@ -19,6 +19,7 @@ interface UserData {
   username: string;
   email: string;
   avatar: string | null;
+  userId: string;
 }
 
 export function Header() {
@@ -27,16 +28,56 @@ export function Header() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check for user data in localStorage
-    const storedUser = localStorage.getItem("smartPantryUser");
-    if (storedUser) {
-      setUserData(JSON.parse(storedUser));
-    }
+    // Check for user data in local and session storage
+    checkUserData();
+    
+    // Listen for storage events (for cross-tab synchronization)
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
+  
+  const handleStorageChange = (event: StorageEvent) => {
+    if (event.key === 'smartPantryUser') {
+      checkUserData();
+    }
+  };
+  
+  const checkUserData = () => {
+    // First check localStorage
+    const storedUser = localStorage.getItem("smartPantryUser");
+    
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+        setUserData(user);
+        return;
+      } catch (e) {
+        console.error("Error parsing user from localStorage", e);
+      }
+    }
+    
+    // If not in localStorage, check sessionStorage
+    const sessionUser = sessionStorage.getItem("smartPantryUser");
+    if (sessionUser) {
+      try {
+        const user = JSON.parse(sessionUser);
+        setUserData(user);
+        
+        // Sync to localStorage for persistence
+        localStorage.setItem("smartPantryUser", sessionUser);
+      } catch (e) {
+        console.error("Error parsing user from sessionStorage", e);
+      }
+    }
+  };
 
   const handleLogout = () => {
-    // Clear user data and redirect to login
+    // Clear user data from both storages
     localStorage.removeItem("smartPantryUser");
+    sessionStorage.removeItem("smartPantryUser");
     setUserData(null);
     
     toast({
