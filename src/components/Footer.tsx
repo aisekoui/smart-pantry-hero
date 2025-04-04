@@ -28,32 +28,32 @@ export function Footer() {
   ];
   
   return (
-    <footer className="w-full border-t bg-muted/50 py-6">
-      <div className="container">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          <div className="flex items-center mb-4 md:mb-0">
-            <span className="text-sm text-muted-foreground">
+    <footer className="w-full border-t bg-muted/50 py-4 md:py-6">
+      <div className="container px-4">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-center">
+            <span className="text-xs md:text-sm text-muted-foreground text-center md:text-left">
               © {currentYear} Smart Pantry. All rights reserved.
             </span>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 md:mb-0">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-4 w-full md:w-auto">
             {teamMembers.map((member) => (
-              <HoverCard key={member.name}>
+              <HoverCard key={member.name} openDelay={300} closeDelay={100}>
                 <HoverCardTrigger asChild>
-                  <div className="text-sm font-medium cursor-pointer hover:text-primary transition-colors">
+                  <div className="text-xs md:text-sm font-medium cursor-pointer hover:text-primary transition-colors text-center">
                     {member.name}
                   </div>
                 </HoverCardTrigger>
-                <HoverCardContent className="w-80">
+                <HoverCardContent className="w-72 p-4" align="center">
                   <div className="space-y-2">
                     <h4 className="text-sm font-semibold">{member.name}</h4>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Mail className="h-4 w-4" />
-                      <span>{member.email}</span>
+                      <Mail className="h-4 w-4 flex-shrink-0" />
+                      <span className="text-xs truncate">{member.email}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Phone className="h-4 w-4" />
+                      <Phone className="h-4 w-4 flex-shrink-0" />
                       <span>{member.phone}</span>
                     </div>
                   </div>
@@ -62,7 +62,7 @@ export function Footer() {
             ))}
           </div>
           
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-4 mt-2 md:mt-0">
             <a 
               href="https://github.com" 
               target="_blank" 
@@ -70,12 +70,12 @@ export function Footer() {
               className="text-muted-foreground hover:text-foreground transition-colors"
               aria-label="GitHub"
             >
-              <Github className="h-5 w-5" />
+              <Github className="h-4 w-4 md:h-5 md:w-5" />
             </a>
             
-            <div className="flex items-center text-sm text-muted-foreground">
+            <div className="flex items-center text-xs md:text-sm text-muted-foreground">
               <span>Made with</span>
-              <Heart className="h-4 w-4 mx-1 text-red-500" />
+              <Heart className="h-3 w-3 md:h-4 md:w-4 mx-1 text-red-500" />
               <span>by Smart Pantry Team</span>
             </div>
           </div>
