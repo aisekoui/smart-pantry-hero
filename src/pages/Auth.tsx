@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/components/ui/use-toast";
 import { Mail, Lock, User, ArrowRight, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Auth = () => {
   const [isRightPanelActive, setIsRightPanelActive] = useState(false);
@@ -18,6 +18,7 @@ const Auth = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     // Check if user is already logged in
@@ -119,6 +120,147 @@ const Auth = () => {
     setSignUpPassword('');
     setSignUpUsername('');
   };
+
+  if (isMobile) {
+    return (
+      <div className="min-h-screen w-full flex flex-col bg-cover bg-center p-4"
+           style={{backgroundImage: "url('https://images.unsplash.com/photo-1606787366850-de6330128bfc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')"}}>
+        <div className="w-full max-w-md mx-auto mt-8 bg-card rounded-xl shadow-lg overflow-hidden">
+          {!isRightPanelActive ? (
+            <div className="p-6">
+              <div className="flex flex-col items-center mb-6">
+                <img 
+                  src="/lovable-uploads/81b81798-a0fc-452c-8e3c-c3176ffd9868.png" 
+                  alt="Smart Pantry Logo" 
+                  className="h-16 w-16 mb-4"
+                />
+                <h2 className="text-2xl font-bold mb-1">Welcome Back</h2>
+                <p className="text-muted-foreground text-center text-sm">Sign in to access your Smart Pantry account</p>
+              </div>
+
+              {error && !isRightPanelActive && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              <form onSubmit={handleSubmitSignIn} className="space-y-4">
+                <div className="flex items-center space-x-2 border rounded-md px-3 bg-background">
+                  <Mail className="h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    type="email" 
+                    placeholder="Email" 
+                    className="border-0 focus-visible:ring-0" 
+                    value={signInEmail}
+                    onChange={(e) => setSignInEmail(e.target.value)}
+                  />
+                </div>
+                <div className="flex items-center space-x-2 border rounded-md px-3 bg-background">
+                  <Lock className="h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    type="password" 
+                    placeholder="Password" 
+                    className="border-0 focus-visible:ring-0" 
+                    value={signInPassword}
+                    onChange={(e) => setSignInPassword(e.target.value)}
+                  />
+                </div>
+                <a href="#" className="block text-sm text-primary hover:underline text-right">
+                  Forgot your password?
+                </a>
+                <Button type="submit" className="w-full group">
+                  Sign In
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </form>
+              
+              <div className="mt-6 pt-4 border-t text-center">
+                <p className="text-sm text-muted-foreground">
+                  Don't have an account?{" "}
+                  <button 
+                    type="button"
+                    onClick={handleSignUpClick} 
+                    className="text-primary hover:underline font-medium"
+                  >
+                    Sign up here
+                  </button>
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="p-6">
+              <div className="flex flex-col items-center mb-6">
+                <Avatar className="h-16 w-16 mb-4">
+                  <AvatarImage src="https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" />
+                  <AvatarFallback>SP</AvatarFallback>
+                </Avatar>
+                <h2 className="text-2xl font-bold mb-1">Create Account</h2>
+                <p className="text-muted-foreground text-center text-sm">Join Smart Pantry to start organizing your kitchen intelligently</p>
+              </div>
+
+              {error && isRightPanelActive && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              <form onSubmit={handleSubmitSignUp} className="space-y-4">
+                <div className="flex items-center space-x-2 border rounded-md px-3 bg-background">
+                  <User className="h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    type="text" 
+                    placeholder="Username" 
+                    className="border-0 focus-visible:ring-0" 
+                    value={signUpUsername}
+                    onChange={(e) => setSignUpUsername(e.target.value)}
+                  />
+                </div>
+                <div className="flex items-center space-x-2 border rounded-md px-3 bg-background">
+                  <Mail className="h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    type="email" 
+                    placeholder="Email" 
+                    className="border-0 focus-visible:ring-0" 
+                    value={signUpEmail}
+                    onChange={(e) => setSignUpEmail(e.target.value)}
+                  />
+                </div>
+                <div className="flex items-center space-x-2 border rounded-md px-3 bg-background">
+                  <Lock className="h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    type="password" 
+                    placeholder="Password" 
+                    className="border-0 focus-visible:ring-0" 
+                    value={signUpPassword}
+                    onChange={(e) => setSignUpPassword(e.target.value)}
+                  />
+                </div>
+                <Button type="submit" className="w-full group">
+                  Sign Up
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </form>
+              
+              <div className="mt-6 pt-4 border-t text-center">
+                <p className="text-sm text-muted-foreground">
+                  Already have an account?{" "}
+                  <button 
+                    type="button"
+                    onClick={handleSignInClick} 
+                    className="text-primary hover:underline font-medium"
+                  >
+                    Sign in here
+                  </button>
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-cover bg-center px-4 py-12"
